@@ -1,0 +1,50 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} - MoonMist{% endblock %}
+
+{% block content %}
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="row g-0">
+            <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-5">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded shadow-lg" style="max-height: 500px;" alt="{{ product.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/500x500?text=MoonMist" class="img-fluid rounded shadow" alt="No image">
+                {% endif %}
+            </div>
+            <div class="col-md-6 p-5">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}" class="text-decoration-none text-muted">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}" class="text-decoration-none text-muted">{{ product.category.name }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+                    </ol>
+                </nav>
+
+                <h1 class="display-5 fw-bold mb-3">{{ product.name }}</h1>
+                <h2 class="text-primary mb-4">${{ product.price }}</h2>
+                
+                <p class="lead text-muted mb-5">{{ product.description|linebreaks }}</p>
+                
+                <hr class="my-4 opacity-10">
+
+                <form action="{% url 'shop:cart_add' product.id %}" method="post" class="row g-3 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <label for="quantity" class="col-form-label fw-bold">Quantity:</label>
+                    </div>
+                    <div class="col-auto">
+                        {{ cart_product_form.quantity }}
+                    </div>
+                    {{ cart_product_form.override }}
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-bag-plus me-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

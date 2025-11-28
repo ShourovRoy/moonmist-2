@@ -1,0 +1,78 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}MoonMist - Handmade Treasures{% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if not category %}
+    <div class="p-5 mb-5 bg-light rounded-3 text-center" style="background: linear-gradient(135deg, #e056fd 0%, #686de0 100%); color: white; border-radius: 30px !important;">
+        <div class="container-fluid py-5">
+            <h1 class="display-4 fw-bold">Handmade with Love</h1>
+            <p class="col-md-8 fs-4 mx-auto">Discover our unique collection of stickers, bracelets, and jewelry for kids.</p>
+            <a href="#products" class="btn btn-light btn-lg rounded-pill mt-3 px-5 fw-bold" style="color: #686de0;">Shop Now</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row" id="products">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-bold text-uppercase small py-3">
+                    Categories
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'shop:product_list' %}" class="list-group-item list-group-item-action {% if not category %}active bg-light text-primary border-start border-4 border-primary{% endif %}">All Treasures</a>
+                    {% for c in categories %}
+                        <a href="{{ c.get_absolute_url }}" class="list-group-item list-group-item-action {% if category.slug == c.slug %}active bg-light text-primary border-start border-4 border-primary{% endif %}">{{ c.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h3 class="mb-4 fw-bold" style="color: var(--secondary-color);">
+                {% if category %}{{ category.name }}{% else %}Latest Arrivals{% endif %}
+            </h3>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <a href="{{ product.get_absolute_url }}" class="position-relative overflow-hidden">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x300?text=MoonMist" class="card-img-top" alt="No image">
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 p-2">
+                                    <span class="badge bg-white text-dark shadow-sm rounded-pill">${{ product.price }}</span>
+                                </div>
+                            </a>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <a href="{{ product.get_absolute_url }}" class="text-dark text-decoration-none stretched-link">{{ product.name }}</a>
+                                </h5>
+                                <p class="card-text text-muted small">{{ product.category.name }}</p>
+                            </div>
+                            <div class="card-footer bg-white border-0 pb-3">
+                                <div class="d-grid">
+                                    <form action="{% url 'shop:cart_add' product.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-outline-primary rounded-pill w-100 btn-sm">
+                                            <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No products found in this category.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
